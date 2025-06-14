@@ -3,29 +3,53 @@ import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from './config/wallet'
 import HomePage from './pages/HomePage'
-import GamesPage from './pages/GamesPage'
-import GamePage from './pages/GamePage'
+import GamesListPage from './pages/GamesListPage'
+import BlackjackPage from './pages/games/BlackjackPage'
+// import SlotsPage from './pages/games/SlotsPage'     // Futur
+// import RoulettePage from './pages/games/RoulettePage' // Futur
 
 const queryClient = new QueryClient()
 
-// Composant principal avec wagmi
 const AppContent = () => {
-  const [currentPage, setCurrentPage] = useState('home') // 'home', 'games', 'blackjack'
+  const [currentPage, setCurrentPage] = useState('home')
+  const [currentGame, setCurrentGame] = useState(null)
   
-  // Navigation entre pages
-  switch (currentPage) {
-    case 'games':
-      return (
-        <GamesPage 
-          onNavigateHome={() => setCurrentPage('home')}
-          onNavigateToBlackjack={() => setCurrentPage('blackjack')}
-        />
-      )
-    case 'blackjack':
-      return <GamePage onNavigateHome={() => setCurrentPage('home')} />
-    default:
-      return <HomePage onNavigateToGame={() => setCurrentPage('games')} />
+  const navigateToGame = (gameId) => {
+    setCurrentGame(gameId)
+    setCurrentPage('game')
   }
+  
+  const navigateToGames = () => {
+    setCurrentPage('games')
+    setCurrentGame(null)
+  }
+  
+  const navigateHome = () => {
+    setCurrentPage('home')
+    setCurrentGame(null)
+  }
+
+  // Routing logic
+  if (currentPage === 'game' && currentGame) {
+    switch (currentGame) {
+      case 'blackjack':
+        return <BlackjackPage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
+      case 'slots':
+        // return <SlotsPage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
+        return <div>Slots Coming Soon!</div>
+      case 'roulette':
+        // return <RoulettePage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
+        return <div>Roulette Coming Soon!</div>
+      default:
+        return <GamesListPage onNavigateHome={navigateHome} onNavigateToGame={navigateToGame} />
+    }
+  }
+  
+  if (currentPage === 'games') {
+    return <GamesListPage onNavigateHome={navigateHome} onNavigateToGame={navigateToGame} />
+  }
+  
+  return <HomePage onNavigateToGames={navigateToGames} />
 }
 
 function App() {

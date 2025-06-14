@@ -27,7 +27,7 @@ const HomePage = ({ onNavigateToGame }) => {
           </ul>
           
           <div>
-            <SmartWalletConnect variant="navbar" />s
+            <SmartWalletConnect variant="navbar" />
           </div>
         </div>
       </nav>
