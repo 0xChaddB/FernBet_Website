@@ -198,7 +198,7 @@ const SmartWalletConnect = ({ variant = 'default' }) => {
         }
       </button>
 
-      {/* Modal de connexion */}
+      {/* Modal de connexion - POPUP PARFAITEMENT CENTRÉE */}
       {showModal && (
         <div style={{
           position: 'fixed',
@@ -211,18 +211,20 @@ const SmartWalletConnect = ({ variant = 'default' }) => {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
-          backdropFilter: 'blur(5px)'
+          backdropFilter: 'blur(5px)',
+          padding: '1rem' // Pour éviter que la modal touche les bords sur mobile
         }}>
           <div style={{
             background: 'linear-gradient(135deg, #1e293b, #065f46)',
             borderRadius: '1.5rem',
             padding: '2.5rem',
+            width: '100%',
             maxWidth: '400px',
-            width: '90%',
             border: '2px solid rgba(52, 211, 153, 0.3)',
             boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
             animation: 'modalSlideIn 0.3s ease',
-            position: 'relative'
+            position: 'relative',
+            margin: 'auto' // Assure le centrage
           }}>
             {/* Bouton de fermeture */}
             <button
