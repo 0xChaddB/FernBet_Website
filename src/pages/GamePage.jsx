@@ -2,7 +2,7 @@ import React from 'react'
 import BlackjackGame from '../components/BlackjackGame'
 import SmartWalletConnect from '../components/SmartWalletConnect'
 
-const GamePage = ({ onNavigateHome }) => {
+const GamePage = ({ onNavigateHome, onNavigateToGames }) => {
   return (
     <div style={{
       minHeight: '100vh',
@@ -32,6 +32,21 @@ const GamePage = ({ onNavigateHome }) => {
             }}
           >
             ← Back to Home
+          </button>
+
+          <button
+            onClick={onNavigateToGames}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(52, 211, 153, 0.5)',
+              color: '#34d399',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            ← Games
           </button>
           <div style={{
             fontSize: '1.5rem',

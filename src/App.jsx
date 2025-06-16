@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from './config/wallet'
 import HomePage from './pages/HomePage'
 import GamesListPage from './pages/GamesListPage'
-import BlackjackPage from './pages/games/BlackjackPage'
+import GamePage from './pages/GamePage'
 // import SlotsPage from './pages/games/SlotsPage'     // Futur
 // import RoulettePage from './pages/games/RoulettePage' // Futur
 
@@ -33,7 +33,7 @@ const AppContent = () => {
   if (currentPage === 'game' && currentGame) {
     switch (currentGame) {
       case 'blackjack':
-        return <BlackjackPage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
+        return <GamePage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
       case 'slots':
         // return <SlotsPage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
         return <div>Slots Coming Soon!</div>

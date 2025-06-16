@@ -43,7 +43,7 @@ export const GAMES_CONFIG = [
     id: 'poker',
     name: 'Poker',
     icon: '🃏',
-    description: 'Strategic play in our premium poker rooms',
+    description: 'Strategic play in our premium poker rnpmooms',
     players: '890',
     available: false,
     minBet: '0.02 ETH',
