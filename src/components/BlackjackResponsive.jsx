@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useBlackjackContract } from '../hooks/useBlackjackContract'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
-import { useMockBlackjackContract } from '../hooks/useMockBlackjack'
 
 // Responsive card component
 const Card = ({ value, isHidden = false, isNew = false }) => {

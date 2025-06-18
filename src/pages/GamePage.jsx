@@ -9,14 +9,14 @@ const GamePage = ({ currentGame, onNavigateHome, onNavigateToGames }) => {
   const renderGame = () => {
     switch(currentGame) {
       case 'dice':
-        return <DiceGameResponsive demoMode={true} />
+        return <DiceGameResponsive demoMode={false} />
       case 'roulette':
-        return <RouletteGame demoMode={true} />
+        return <RouletteGame demoMode={false} />
       case 'slots':
-        return <SlotsGame demoMode={true} />
+        return <SlotsGame demoMode={false} />
       case 'blackjack':
       default:
-        return <BlackjackResponsive demoMode={true} />
+        return <BlackjackResponsive demoMode={false} />
     }
   }
 

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import SmartWalletConnect from '../components/SmartWalletConnect'
+import { useAccount } from 'wagmi'
+import { useCHIPBalance } from '../hooks/useCHIPToken'
+import { useCasinoBank } from '../hooks/useCasinoBank'
 
 const HomePageResponsive = ({ onNavigateToGame }) => {
   const [isMobile, setIsMobile] = useState(false)
+  const { isConnected } = useAccount()
+  const { balance, isLoading: isBalanceLoading } = useCHIPBalance()
+  const { hasClaimedFreeChips, claimFreeChips, isLoading: isClaimLoading } = useCasinoBank()
   
   useEffect(() => {
     const checkMobile = () => {
@@ -335,6 +341,115 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             </div>
           </div>
         </section>
+
+        {/* CHIP Balance and Free Chips Section */}
+        {isConnected && (
+          <section style={{
+            padding: isMobile ? '1rem' : '1.5rem 2rem',
+            background: 'rgba(16, 185, 129, 0.05)',
+            borderBottom: '1px solid rgba(16, 185, 129, 0.2)'
+          }}>
+            <div style={{
+              maxWidth: '1400px',
+              margin: '0 auto',
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem'
+            }}>
+              {/* CHIP Balance */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
+              }}>
+                <div style={{
+                  width: isMobile ? '40px' : '48px',
+                  height: isMobile ? '40px' : '48px',
+                  background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  fontSize: isMobile ? '1rem' : '1.2rem',
+                  color: '#78350f',
+                  boxShadow: '0 4px 12px rgba(251, 191, 36, 0.3)'
+                }}>
+                  C
+                </div>
+                <div>
+                  <div style={{ fontSize: isMobile ? '0.75rem' : '0.85rem', color: '#94a3b8' }}>
+                    Your CHIP Balance
+                  </div>
+                  <div style={{ 
+                    fontSize: isMobile ? '1.25rem' : '1.5rem', 
+                    fontWeight: 'bold', 
+                    color: '#fbbf24' 
+                  }}>
+                    {isBalanceLoading ? '...' : balance ? `${balance} CHIP` : '0 CHIP'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Free Chips Button */}
+              {!hasClaimedFreeChips && (
+                <button
+                  onClick={claimFreeChips}
+                  disabled={isClaimLoading}
+                  style={{
+                    background: isClaimLoading 
+                      ? 'linear-gradient(135deg, #6b7280, #4b5563)'
+                      : 'linear-gradient(135deg, #10b981, #059669)',
+                    color: 'white',
+                    padding: isMobile ? '0.75rem 1.5rem' : '0.875rem 2rem',
+                    borderRadius: '0.75rem',
+                    border: 'none',
+                    fontSize: isMobile ? '0.9rem' : '1rem',
+                    fontWeight: '600',
+                    cursor: isClaimLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    width: isMobile ? '100%' : 'auto',
+                    justifyContent: 'center'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isClaimLoading) {
+                      e.target.style.transform = 'translateY(-2px)'
+                      e.target.style.boxShadow = '0 6px 16px rgba(16, 185, 129, 0.4)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isClaimLoading) {
+                      e.target.style.transform = 'translateY(0)'
+                      e.target.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)'
+                    }
+                  }}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>🎁</span>
+                  {isClaimLoading ? 'Claiming...' : 'Claim 5 Free CHIP'}
+                </button>
+              )}
+
+              {hasClaimedFreeChips && (
+                <div style={{
+                  color: '#10b981',
+                  fontSize: isMobile ? '0.875rem' : '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <span>✅</span>
+                  Free chips claimed!
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Games Grid */}
         <section style={{
