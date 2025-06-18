@@ -156,15 +156,15 @@ export const useCasinoBank = () => {
     }
   }
 
+  // Initialize hooks
+  const { claimFreeChips, isPending, isConfirming, isSuccess, error } = useClaimFreeChips()
+  
   return {
     hasClaimedFreeChips: !!hasClaimedFreeChips,
-    useGetChipValueForETH,
-    useGetETHValueForChip,
-    useDepositETH,
-    useCashoutCHIP,
-    useClaimFreeChips,
-    isLoading,
+    claimFreeChips,
+    isLoading: isPending || isConfirming || isLoading,
     isConnected,
-    address
+    address,
+    error
   }
 }

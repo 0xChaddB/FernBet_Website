@@ -114,7 +114,7 @@ export const CASINO_BANK_CONFIG = {
     {
       "type": "function",
       "name": "hasClaimedFreeChips",
-      "inputs": [{"name": "user", "type": "address"}],
+      "inputs": [{"name": "", "type": "address"}],
       "outputs": [{"name": "", "type": "bool"}],
       "stateMutability": "view"
     },

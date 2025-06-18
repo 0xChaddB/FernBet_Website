@@ -72,7 +72,6 @@ const ChipSelector = ({ onAdd, betAmount }) => {
 
 const BlackjackResponsive = ({ demoMode = false }) => {
   const realContract = useBlackjackContract()
-  const mockContract = useMockBlackjackContract()
   const { balance: realChipBalance } = useCHIPBalance()
   
   const {
@@ -82,9 +81,9 @@ const BlackjackResponsive = ({ demoMode = false }) => {
     stand,
     resolveGame,
     isConnected
-  } = demoMode ? mockContract : realContract
+  } = realContract
 
-  const chipBalance = demoMode ? mockContract.useMockCHIPBalance().balance : realChipBalance
+  const chipBalance = realChipBalance
 
   const [betAmount, setBetAmount] = useState(10)
   const [customBet, setCustomBet] = useState('')

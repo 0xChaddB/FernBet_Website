@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useDiceContract } from '../hooks/useDiceContract'
-import { useMockDiceContract } from '../hooks/useMockDice'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
-import { useMockBlackjackContract } from '../hooks/useMockBlackjack'
 
 const DiceGameResponsive = ({ demoMode = false }) => {
   // Contracts
-  const mockBlackjackContract = useMockBlackjackContract()
   const realContract = useDiceContract()
-  const mockContract = useMockDiceContract()
   const { balance: realChipBalance } = useCHIPBalance()
 
   const {
@@ -16,9 +12,9 @@ const DiceGameResponsive = ({ demoMode = false }) => {
     placeBet,
     claimWinnings,
     isConnected
-  } = demoMode ? mockContract : realContract
+  } = realContract
 
-  const chipBalance = demoMode ? mockBlackjackContract.useMockCHIPBalance().balance : realChipBalance
+  const chipBalance = realChipBalance
 
   // Local state
   const [betAmount, setBetAmount] = useState(1)
@@ -43,23 +39,7 @@ const DiceGameResponsive = ({ demoMode = false }) => {
       const targetNumber = Math.floor(rollOver)
       const betType = 0 // Over
       
-      if (demoMode) {
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
-        const roll = Math.random() * 100
-        const won = roll > rollOver
-        const payout = won ? betAmount * payoutMultiplier : 0
-        
-        setLastRoll({
-          roll: roll.toFixed(2),
-          won,
-          payout: payout.toFixed(2),
-          target: rollOver
-        })
-        setShowResult(true)
-      } else {
-        await placeBet(betType, targetNumber, betAmount)
-      }
+      await placeBet(betType, targetNumber, betAmount)
     } catch (error) {
       console.error('Error rolling dice:', error)
     } finally {
@@ -70,13 +50,13 @@ const DiceGameResponsive = ({ demoMode = false }) => {
   const handleNextRoll = () => {
     setShowResult(false)
     setLastRoll(null)
-    if (!demoMode && gameState.hasActiveBet && gameState.isResolved) {
+    if (gameState.hasActiveBet && gameState.isResolved) {
       claimWinnings()
     }
   }
 
   // Force connection - no demo mode allowed
-  if (!isConnected && !demoMode) {
+  if (!isConnected) {
     return (
       <div style={{
         width: '100%',
