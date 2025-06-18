@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import ConnectWalletButton from '../components/ConnectWalletButton'
+import SimpleConnectButton from '../components/SimpleConnectButton'
 import PaymasterBanner from '../components/PaymasterBanner'
 import { useAccount, useChainId, useSwitchChain } from 'wagmi'
 import { baseSepolia } from 'wagmi/chains'
@@ -290,7 +290,7 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             alignItems: 'center',
             gap: '0.75rem'
           }}>
-            <ConnectWalletButton variant="navbar" />
+            <SimpleConnectButton variant="navbar" />
           </div>
         </div>
       </nav>
@@ -388,7 +388,7 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
               }}>
                 Connect your wallet to claim your free chips and start playing
               </p>
-              <ConnectWalletButton variant="default" />
+              <SimpleConnectButton variant="default" />
             </div>
           </section>
         )}

@@ -3,7 +3,7 @@ import BlackjackResponsive from '../components/BlackjackResponsive'
 import DiceGameResponsive from '../components/DiceGameResponsive'
 import RouletteGame from '../components/RouletteGame'
 import SlotsGame from '../components/SlotsGame'
-import SmartWalletConnect from '../components/SmartWalletConnect'
+import SimpleConnectButton from '../components/SimpleConnectButton'
 
 const GamePage = ({ currentGame, onNavigateHome, onNavigateToGames }) => {
   const renderGame = () => {
@@ -100,7 +100,7 @@ const GamePage = ({ currentGame, onNavigateHome, onNavigateToGames }) => {
           </div>
         </div>
         
-        <SmartWalletConnect variant="navbar" />
+        <SimpleConnectButton variant="navbar" />
       </nav>
 
       {/* Contenu du jeu */}

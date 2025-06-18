@@ -17,25 +17,11 @@ const PaymasterBanner = () => {
 
   // Check if paymaster is already enabled
   useEffect(() => {
-    const checkPaymasterStatus = async () => {
-      if (isCoinbaseWallet && window.ethereum) {
-        try {
-          // Check if paymaster is enabled in current session
-          const permissions = await window.ethereum.request({
-            method: 'wallet_getPermissions'
-          });
-          const hasPaymaster = permissions?.some(p => p.parentCapability === 'wallet_paymaster');
-          setPaymasterEnabled(hasPaymaster);
-        } catch (error) {
-          console.error('Error checking paymaster status:', error);
-        }
-      }
-    };
-
-    if (isConnected) {
-      checkPaymasterStatus();
+    // On Base Sepolia with Coinbase Wallet, paymaster is automatically enabled
+    if (isCoinbaseWallet && network?.name === 'Base Sepolia') {
+      setPaymasterEnabled(true);
     }
-  }, [isConnected, isCoinbaseWallet]);
+  }, [isConnected, isCoinbaseWallet, network]);
 
   const enablePaymaster = async () => {
     if (!isCoinbaseWallet) return;

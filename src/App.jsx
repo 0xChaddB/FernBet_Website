@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Web3Provider } from './providers/Web3Provider'
+import { Web3Provider } from './providers/Web3ProviderSimple'
 import HomePageResponsive from './pages/HomePageResponsive'
 import GamePage from './pages/GamePage'
 
