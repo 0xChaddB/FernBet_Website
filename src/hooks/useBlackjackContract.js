@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { parseEther, formatEther } from 'viem'
+import { parseUnits, formatUnits, encodeFunctionData } from 'viem'
 import { BLACKJACK_CONFIG, GAME_FLAGS, isFlagSet, formatCard } from '../config/blackjack'
+import { useEnsureCHIPApproval } from './useCHIPToken'
 
 export const useBlackjackContract = () => {
   const { address, isConnected } = useAccount()
   const { writeContract, data: hash, isPending: isWritePending, error: writeError } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash })
+  const { ensureApproval, isApproving } = useEnsureCHIPApproval()
   
   const [gameState, setGameState] = useState({
     isInGame: false,
@@ -108,14 +110,30 @@ export const useBlackjackContract = () => {
     if (!address || !isConnected) return
 
     try {
-      setGameState(prev => ({ ...prev, isLoading: true, message: 'Starting game...' }))
+      setGameState(prev => ({ ...prev, isLoading: true, message: 'Approving CHIP tokens...' }))
 
-      // Cette action nécessite toujours une signature (implique une mise)
+      // Ensure CHIP tokens are approved first
+      const approved = await ensureApproval(betAmount)
+      if (!approved) {
+        setGameState(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          message: 'Failed to approve CHIP tokens' 
+        }))
+        return
+      }
+
+      setGameState(prev => ({ ...prev, message: 'Starting game...' }))
+
+      // Convert bet amount to CHIP tokens (18 decimals)
+      const betInWei = parseUnits(betAmount.toString(), 18)
+
+      // Start game with CHIP tokens (no ETH value needed)
       writeContract({
         address: BLACKJACK_CONFIG.address,
         abi: BLACKJACK_CONFIG.abi,
         functionName: 'startGame',
-        value: parseEther(betAmount.toString())
+        args: [betInWei]
       })
 
       // Proposer la création d'une session après le premier jeu
@@ -306,13 +324,13 @@ export const useBlackjackContract = () => {
       dealerCards: formattedDealerCards,
       playerScore,
       dealerScore,
-      bet: gameData?.[0] ? formatEther(gameData[0]) : '0',
+      bet: gameData?.[0] ? formatUnits(gameData[0], 18) : '0',
       status,
       message,
-      isLoading: isWritePending || isConfirming
+      isLoading: isWritePending || isConfirming || isApproving
     })
 
-  }, [isConnected, isInGame, playerCards, dealerCards, gameData, isWritePending, isConfirming])
+  }, [isConnected, isInGame, playerCards, dealerCards, gameData, isWritePending, isConfirming, isApproving])
 
   // Refresh après confirmation de transaction
   useEffect(() => {

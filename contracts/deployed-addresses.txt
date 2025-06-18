@@ -1,0 +1,22 @@
+=== FERNBET CASINO - DEPLOYED CONTRACTS (SEPOLIA) ===
+Date: 2025-01-18
+
+CasinoBank: 0x490B24a5f87EC80Ca009E029b3267c51659Cf11B
+CasinoChip: 0x52cBc9331983B8BC9b012EEbf50e43aD4c358f46
+Blackjack: 0x4b8fE239BFA3d6cFb3393D72F9a6d16b0B2DCD90
+Dice: 0xD3E221DfbF78fa72d9Afcad8887F6a7806b21aBC
+Roulette: 0x399F2e0b5297f77e86608aEe4c03656EA5425b6a
+Slots: 0xbE43673140Eb66239ee49b33FFb5Bb5f3DfaEb5C
+
+Deployer: 0x1ad52BE59e252F16f80a92989F6668982a5a6a7D
+
+Notes:
+- CasinoBank funded with 1,000,000 CHIP tokens
+- Users can claim 5 free CHIP tokens
+- All contracts verified on Etherscan (except first CasinoBank deployment)
+- VRF Subscription ID: 103036806356572904141444650306175330773219057672506466552021010715624678697306
+
+NEXT STEPS:
+1. Add game contracts as consumers to VRF subscription at https://vrf.chain.link
+2. Fund VRF subscription with LINK tokens
+3. Update frontend with these addresses

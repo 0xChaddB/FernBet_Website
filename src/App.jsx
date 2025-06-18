@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from './config/wallet'
-import HomePage from './pages/HomePage'
+import HomePageResponsive from './pages/HomePageResponsive'
 import GamePage from './pages/GamePage'
 
 const queryClient = new QueryClient()
@@ -28,10 +28,10 @@ const AppContent = () => {
 
   // Routing logic simplifié
   if (currentPage === 'game') {
-    return <GamePage onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
+    return <GamePage currentGame={currentGame} onNavigateHome={navigateHome} onNavigateToGames={navigateToGames} />
   }
   
-  return <HomePage onNavigateToGame={navigateToGame} />
+  return <HomePageResponsive onNavigateToGame={navigateToGame} />
 }
 
 function App() {

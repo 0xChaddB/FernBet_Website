@@ -1,10 +1,10 @@
 import { createConfig, http } from 'wagmi'
-import { base, baseSepolia } from 'wagmi/chains'
+import { base, baseSepolia, sepolia } from 'wagmi/chains'
 import { coinbaseWallet } from 'wagmi/connectors'
 
 // Configuration Coinbase Smart Wallet
 export const config = createConfig({
-  chains: [base, baseSepolia],
+  chains: [sepolia, base, baseSepolia],
   connectors: [
     coinbaseWallet({
       appName: 'FernBet Casino',
@@ -14,6 +14,7 @@ export const config = createConfig({
     })
   ],
   transports: {
+    [sepolia.id]: http(),
     [base.id]: http(),
     [baseSepolia.id]: http()
   }

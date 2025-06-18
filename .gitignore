@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Foundry
+contracts/out/
+contracts/cache/
+contracts/.env
+
+# Deployment artifacts
+contracts/broadcast/
+
+.env
