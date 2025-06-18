@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import SmartWalletConnect from '../components/SmartWalletConnect'
+import ConnectWalletButton from '../components/ConnectWalletButton'
 import PaymasterBanner from '../components/PaymasterBanner'
-import NetworkSelector from '../components/NetworkSelector'
-import { useAccount } from 'wagmi'
+import { useAccount, useChainId, useSwitchChain } from 'wagmi'
+import { baseSepolia } from 'wagmi/chains'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
 import { useCasinoBank } from '../hooks/useCasinoBank'
 
 const HomePageResponsive = ({ onNavigateToGame }) => {
   const [isMobile, setIsMobile] = useState(false)
   const { isConnected } = useAccount()
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
   const { balance, isLoading: isBalanceLoading } = useCHIPBalance()
   const { hasClaimedFreeChips, claimFreeChips, isLoading: isClaimLoading } = useCasinoBank()
   
@@ -288,8 +290,7 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             alignItems: 'center',
             gap: '0.75rem'
           }}>
-            <NetworkSelector />
-            <SmartWalletConnect variant="navbar" />
+            <ConnectWalletButton variant="navbar" />
           </div>
         </div>
       </nav>
@@ -387,7 +388,7 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
               }}>
                 Connect your wallet to claim your free chips and start playing
               </p>
-              <SmartWalletConnect variant="default" />
+              <ConnectWalletButton variant="default" />
             </div>
           </section>
         )}
@@ -446,7 +447,22 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
               {/* Free Chips Button */}
               {!hasClaimedFreeChips && (
                 <button
-                  onClick={claimFreeChips}
+                  onClick={async () => {
+                    // Force switch to Base Sepolia before claiming
+                    if (chainId !== baseSepolia.id) {
+                      try {
+                        await switchChain({ chainId: baseSepolia.id })
+                        // Wait a bit for the switch to complete
+                        setTimeout(() => {
+                          claimFreeChips()
+                        }, 1000)
+                      } catch (error) {
+                        console.error('Failed to switch network:', error)
+                      }
+                    } else {
+                      claimFreeChips()
+                    }
+                  }}
                   disabled={isClaimLoading}
                   style={{
                     background: isClaimLoading 
@@ -517,12 +533,25 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             {games.map(game => (
               <div 
                 key={game.id}
-                onClick={() => {
+                onClick={async () => {
                   if (!isConnected) {
                     alert('Please connect your wallet to play!')
                     return
                   }
-                  if (game.available) {
+                  // Force switch to Base Sepolia before playing
+                  if (chainId !== baseSepolia.id) {
+                    try {
+                      await switchChain({ chainId: baseSepolia.id })
+                      // Wait a bit for the switch to complete
+                      setTimeout(() => {
+                        if (game.available) {
+                          onNavigateToGame(game.id)
+                        }
+                      }, 1000)
+                    } catch (error) {
+                      console.error('Failed to switch network:', error)
+                    }
+                  } else if (game.available) {
                     onNavigateToGame(game.id)
                   }
                 }}

@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
-import { WagmiProvider } from 'wagmi'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { config } from './config/wallet'
+import { Web3Provider } from './providers/Web3Provider'
 import HomePageResponsive from './pages/HomePageResponsive'
 import GamePage from './pages/GamePage'
-
-const queryClient = new QueryClient()
 
 const AppContent = () => {
   const [currentPage, setCurrentPage] = useState('home')
@@ -36,11 +32,9 @@ const AppContent = () => {
 
 function App() {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-      </QueryClientProvider>
-    </WagmiProvider>
+    <Web3Provider>
+      <AppContent />
+    </Web3Provider>
   )
 }
 
