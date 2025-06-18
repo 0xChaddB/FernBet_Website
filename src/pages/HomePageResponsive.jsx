@@ -342,6 +342,44 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
           </div>
         </section>
 
+        {/* Welcome Banner for Non-Connected Users */}
+        {!isConnected && (
+          <section style={{
+            padding: isMobile ? '1rem' : '1.5rem 2rem',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(251, 191, 36, 0.1))',
+            borderBottom: '1px solid rgba(16, 185, 129, 0.2)'
+          }}>
+            <div style={{
+              maxWidth: '800px',
+              margin: '0 auto',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                fontSize: isMobile ? '2rem' : '3rem',
+                marginBottom: '0.5rem'
+              }}>
+                🎁
+              </div>
+              <h2 style={{
+                fontSize: isMobile ? '1.25rem' : '1.75rem',
+                fontWeight: 'bold',
+                color: '#fbbf24',
+                marginBottom: '0.5rem'
+              }}>
+                Get 5 Free CHIP Tokens!
+              </h2>
+              <p style={{
+                fontSize: isMobile ? '0.875rem' : '1rem',
+                color: '#94a3b8',
+                marginBottom: '1.5rem'
+              }}>
+                Connect your wallet to claim your free chips and start playing
+              </p>
+              <SmartWalletConnect variant="default" />
+            </div>
+          </section>
+        )}
+
         {/* CHIP Balance and Free Chips Section */}
         {isConnected && (
           <section style={{
@@ -467,7 +505,15 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             {games.map(game => (
               <div 
                 key={game.id}
-                onClick={() => game.available && onNavigateToGame(game.id)}
+                onClick={() => {
+                  if (!isConnected) {
+                    alert('Please connect your wallet to play!')
+                    return
+                  }
+                  if (game.available) {
+                    onNavigateToGame(game.id)
+                  }
+                }}
                 style={{
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -558,6 +604,24 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
                       fontWeight: '500'
                     }}>
                       Coming Soon
+                    </div>
+                  )}
+                  
+                  {game.available && !isConnected && (
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'rgba(0,0,0,0.7)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      <span style={{ fontSize: isMobile ? '1.5rem' : '2rem' }}>🔒</span>
+                      <span style={{ fontSize: isMobile ? '0.75rem' : '0.875rem', color: '#fbbf24' }}>
+                        Connect to Play
+                      </span>
                     </div>
                   )}
                 </div>

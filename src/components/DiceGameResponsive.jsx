@@ -75,6 +75,37 @@ const DiceGameResponsive = ({ demoMode = false }) => {
     }
   }
 
+  // Force connection - no demo mode allowed
+  if (!isConnected && !demoMode) {
+    return (
+      <div style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{
+          background: '#1e293b',
+          borderRadius: '20px',
+          padding: '3rem',
+          textAlign: 'center',
+          maxWidth: '400px'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+          <h2 style={{ color: '#fbbf24', marginBottom: '1rem' }}>
+            Wallet Connection Required
+          </h2>
+          <p style={{ color: '#94a3b8', marginBottom: '2rem' }}>
+            Please connect your wallet to play Dice
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{
       width: '100%',
