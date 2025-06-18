@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useAccount, useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient, useChainId } from 'wagmi';
+import { getNetworkByChainId } from '../config/networks';
 
 const PaymasterBanner = () => {
   const { isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const chainId = useChainId();
+  const network = getNetworkByChainId(chainId);
   const [paymasterEnabled, setPaymasterEnabled] = useState(false);
   const [isEnabling, setIsEnabling] = useState(false);
 
@@ -57,7 +60,8 @@ const PaymasterBanner = () => {
     }
   };
 
-  if (!isConnected || !isCoinbaseWallet) return null;
+  // Only show on Base Sepolia network
+  if (!isConnected || !isCoinbaseWallet || network?.name !== 'Base Sepolia') return null;
 
   return (
     <div style={{

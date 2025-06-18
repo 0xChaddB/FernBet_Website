@@ -1,26 +1,18 @@
-// Contract addresses - UPDATE THESE AFTER DEPLOYMENT
+// Contract addresses - DEPLOYED 2025-01-18
 export const CONTRACT_ADDRESSES = {
-  // ETH Sepolia addresses - DEPLOYED 2025-01-18
-  sepolia: {
+  // Base Sepolia addresses
+  'base-sepolia': {
     casinoChip: '0x52cBc9331983B8BC9b012EEbf50e43aD4c358f46',
     casinoBank: '0x490B24a5f87EC80Ca009E029b3267c51659Cf11B',
-    casino: '0x0000000000000000000000000000000000000000', // Not deployed in this version
     blackjack: '0x4b8fE239BFA3d6cFb3393D72F9a6d16b0B2DCD90',
     dice: '0xD3E221DfbF78fa72d9Afcad8887F6a7806b21aBC',
     roulette: '0x399F2e0b5297f77e86608aEe4c03656EA5425b6a',
     slots: '0xbE43673140Eb66239ee49b33FFb5Bb5f3DfaEb5C',
-    
-    // Chainlink addresses for Sepolia
-    vrfCoordinator: '0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B',
-    keyHash: '0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae',
-    priceFeedETHUSD: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
-    vrfSubscriptionId: '103036806356572904141444650306175330773219057672506466552021010715624678697306'
   }
 }
 
 // CHIP Token Configuration
 export const CHIP_TOKEN_CONFIG = {
-  address: CONTRACT_ADDRESSES.sepolia.casinoChip,
   abi: [
     {
       "type": "function",
@@ -85,7 +77,6 @@ export const CHIP_TOKEN_CONFIG = {
 
 // Casino Bank Configuration
 export const CASINO_BANK_CONFIG = {
-  address: CONTRACT_ADDRESSES.sepolia.casinoBank,
   abi: [
     {
       "type": "function",
@@ -137,7 +128,6 @@ export const CASINO_BANK_CONFIG = {
 
 // Blackjack Configuration
 export const BLACKJACK_CONFIG = {
-  address: CONTRACT_ADDRESSES.sepolia.blackjack,
   abi: [
     // === GAME FUNCTIONS ===
     {
@@ -245,7 +235,6 @@ export const formatCard = (cardIndex) => {
 
 // Dice Game Configuration
 export const DICE_CONFIG = {
-  address: CONTRACT_ADDRESSES.sepolia.dice,
   abi: [
     {
       "type": "function",

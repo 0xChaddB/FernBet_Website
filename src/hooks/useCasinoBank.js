@@ -1,29 +1,33 @@
 import { useState, useEffect } from 'react'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { parseEther, formatEther, parseUnits, formatUnits } from 'viem'
-import { CASINO_BANK_CONFIG, ETH_ADDRESS } from '../config/contracts'
+import { CASINO_BANK_CONFIG, ETH_ADDRESS, CONTRACT_ADDRESSES } from '../config/contracts'
+import { getNetworkKeyByChainId } from '../config/networks'
 
 export const useCasinoBank = () => {
   const { address, isConnected } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const contractAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.casinoBank : null
   
   // Check if user has claimed free chips
   const { data: hasClaimedFreeChips, refetch: refetchClaimStatus } = useReadContract({
-    address: CASINO_BANK_CONFIG.address,
+    address: contractAddress,
     abi: CASINO_BANK_CONFIG.abi,
     functionName: 'hasClaimedFreeChips',
     args: [address],
-    enabled: !!address && isConnected
+    enabled: !!address && isConnected && !!contractAddress
   })
 
   // Get CHIP value for ETH amount
   const useGetChipValueForETH = (ethAmount) => {
     const { data } = useReadContract({
-      address: CASINO_BANK_CONFIG.address,
+      address: contractAddress,
       abi: CASINO_BANK_CONFIG.abi,
       functionName: 'getChipValueForETH',
       args: [parseEther(ethAmount.toString())],
-      enabled: !!ethAmount && ethAmount > 0
+      enabled: !!ethAmount && ethAmount > 0 && !!contractAddress
     })
     
     return data ? formatUnits(data, 18) : '0'
@@ -32,11 +36,11 @@ export const useCasinoBank = () => {
   // Get ETH value for CHIP amount
   const useGetETHValueForChip = (chipAmount) => {
     const { data } = useReadContract({
-      address: CASINO_BANK_CONFIG.address,
+      address: contractAddress,
       abi: CASINO_BANK_CONFIG.abi,
       functionName: 'getETHValueForChip',
       args: [parseUnits(chipAmount.toString(), 18)],
-      enabled: !!chipAmount && chipAmount > 0
+      enabled: !!chipAmount && chipAmount > 0 && !!contractAddress
     })
     
     return data ? formatEther(data) : '0'
@@ -53,7 +57,7 @@ export const useCasinoBank = () => {
       try {
         setIsLoading(true)
         writeContract({
-          address: CASINO_BANK_CONFIG.address,
+          address: contractAddress,
           abi: CASINO_BANK_CONFIG.abi,
           functionName: 'depositETH',
           value: parseEther(ethAmount.toString())
@@ -90,7 +94,7 @@ export const useCasinoBank = () => {
       try {
         setIsLoading(true)
         writeContract({
-          address: CASINO_BANK_CONFIG.address,
+          address: contractAddress,
           abi: CASINO_BANK_CONFIG.abi,
           functionName: 'cashoutCHIP',
           args: [parseUnits(chipAmount.toString(), 18), ETH_ADDRESS]
@@ -127,7 +131,7 @@ export const useCasinoBank = () => {
       try {
         setIsLoading(true)
         writeContract({
-          address: CASINO_BANK_CONFIG.address,
+          address: contractAddress,
           abi: CASINO_BANK_CONFIG.abi,
           functionName: 'claimFreeChips'
         })

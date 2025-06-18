@@ -1,10 +1,13 @@
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { useAccount } from 'wagmi'
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId } from 'wagmi'
 import { useState, useEffect } from 'react'
-import { DICE_CONFIG } from '../config/contracts'
+import { DICE_CONFIG, CONTRACT_ADDRESSES } from '../config/contracts'
+import { getNetworkKeyByChainId } from '../config/networks'
 
 export const useDiceContract = () => {
   const { address, isConnected } = useAccount()
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const contractAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.dice : null
   const [gameState, setGameState] = useState({
     hasActiveBet: false,
     betAmount: '0',
@@ -19,17 +22,19 @@ export const useDiceContract = () => {
 
   // Read active bet
   const { data: activeBet, refetch: refetchActiveBet } = useReadContract({
-    ...DICE_CONFIG,
+    address: contractAddress,
+    abi: DICE_CONFIG.abi,
     functionName: 'getActiveBet',
     args: [address],
-    enabled: !!address,
+    enabled: !!address && !!contractAddress,
   })
 
   const { data: hasActiveBet, refetch: refetchHasActiveBet } = useReadContract({
-    ...DICE_CONFIG,
+    address: contractAddress,
+    abi: DICE_CONFIG.abi,
     functionName: 'hasActiveBet',
     args: [address],
-    enabled: !!address,
+    enabled: !!address && !!contractAddress,
   })
 
   // Write functions
@@ -101,7 +106,8 @@ export const useDiceContract = () => {
       setGameState(prev => ({ ...prev, isLoading: true, message: 'Placing bet...' }))
       
       placeBetWrite({
-        ...DICE_CONFIG,
+        address: contractAddress,
+        abi: DICE_CONFIG.abi,
         functionName: 'placeBet',
         args: [betType, targetNumber, betAmount],
       })
@@ -116,7 +122,8 @@ export const useDiceContract = () => {
       setGameState(prev => ({ ...prev, isLoading: true, message: 'Claiming winnings...' }))
       
       claimWinningsWrite({
-        ...DICE_CONFIG,
+        address: contractAddress,
+        abi: DICE_CONFIG.abi,
         functionName: 'claimWinnings',
       })
     } catch (error) {

@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { parseUnits, formatUnits, encodeFunctionData } from 'viem'
-import { BLACKJACK_CONFIG, GAME_FLAGS, isFlagSet, formatCard } from '../config/blackjack'
+import { BLACKJACK_CONFIG, GAME_FLAGS, isFlagSet, formatCard, CONTRACT_ADDRESSES } from '../config/contracts'
 import { useEnsureCHIPApproval } from './useCHIPToken'
+import { getNetworkKeyByChainId } from '../config/networks'
 
 export const useBlackjackContract = () => {
   const { address, isConnected } = useAccount()
   const { writeContract, data: hash, isPending: isWritePending, error: writeError } = useWriteContract()
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash })
   const { ensureApproval, isApproving } = useEnsureCHIPApproval()
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const contractAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.blackjack : null
   
   const [gameState, setGameState] = useState({
     isInGame: false,
@@ -24,35 +28,35 @@ export const useBlackjackContract = () => {
 
   // === READ CONTRACT DATA ===
   const { data: isInGame, refetch: refetchIsInGame } = useReadContract({
-    address: BLACKJACK_CONFIG.address,
+    address: contractAddress,
     abi: BLACKJACK_CONFIG.abi,
     functionName: 'isInGame',
     args: [address],
-    enabled: !!address && isConnected
+    enabled: !!address && isConnected && !!contractAddress
   })
 
   const { data: playerCards, refetch: refetchPlayerCards } = useReadContract({
-    address: BLACKJACK_CONFIG.address,
+    address: contractAddress,
     abi: BLACKJACK_CONFIG.abi,
     functionName: 'getPlayerCards',
     args: [address],
-    enabled: !!address && isConnected && isInGame
+    enabled: !!address && isConnected && isInGame && !!contractAddress
   })
 
   const { data: dealerCards, refetch: refetchDealerCards } = useReadContract({
-    address: BLACKJACK_CONFIG.address,
+    address: contractAddress,
     abi: BLACKJACK_CONFIG.abi,
     functionName: 'getDealerCards',
     args: [address],
-    enabled: !!address && isConnected && isInGame
+    enabled: !!address && isConnected && isInGame && !!contractAddress
   })
 
   const { data: gameData, refetch: refetchGameData } = useReadContract({
-    address: BLACKJACK_CONFIG.address,
+    address: contractAddress,
     abi: BLACKJACK_CONFIG.abi,
     functionName: 'getGameData',
     args: [address],
-    enabled: !!address && isConnected && isInGame
+    enabled: !!address && isConnected && isInGame && !!contractAddress
   })
 
   // === SMART WALLET SESSION MANAGEMENT ===
@@ -68,7 +72,7 @@ export const useBlackjackContract = () => {
           duration: 3600, // 1 heure
           permissions: [
             {
-              target: BLACKJACK_CONFIG.address,
+              target: contractAddress,
               functions: ['hit', 'stand', 'resolveGame'], // Pas startGame (garde le contrôle des mises)
               maxGasLimit: '200000'
             }
@@ -130,7 +134,7 @@ export const useBlackjackContract = () => {
 
       // Start game with CHIP tokens (no ETH value needed)
       writeContract({
-        address: BLACKJACK_CONFIG.address,
+        address: contractAddress,
         abi: BLACKJACK_CONFIG.abi,
         functionName: 'startGame',
         args: [betInWei]
@@ -170,7 +174,7 @@ export const useBlackjackContract = () => {
         await window.ethereum?.request({
           method: 'wallet_executeSession',
           params: [{
-            to: BLACKJACK_CONFIG.address,
+            to: contractAddress,
             data: encodeFunctionData({
               abi: BLACKJACK_CONFIG.abi,
               functionName: 'hit'
@@ -180,7 +184,7 @@ export const useBlackjackContract = () => {
       } else {
         // Transaction normale avec signature
         writeContract({
-          address: BLACKJACK_CONFIG.address,
+          address: contractAddress,
           abi: BLACKJACK_CONFIG.abi,
           functionName: 'hit'
         })
@@ -206,7 +210,7 @@ export const useBlackjackContract = () => {
         await window.ethereum?.request({
           method: 'wallet_executeSession',
           params: [{
-            to: BLACKJACK_CONFIG.address,
+            to: contractAddress,
             data: encodeFunctionData({
               abi: BLACKJACK_CONFIG.abi,
               functionName: 'stand'
@@ -215,7 +219,7 @@ export const useBlackjackContract = () => {
         })
       } else {
         writeContract({
-          address: BLACKJACK_CONFIG.address,
+          address: contractAddress,
           abi: BLACKJACK_CONFIG.abi,
           functionName: 'stand'
         })
@@ -241,7 +245,7 @@ export const useBlackjackContract = () => {
         await window.ethereum?.request({
           method: 'wallet_executeSession',
           params: [{
-            to: BLACKJACK_CONFIG.address,
+            to: contractAddress,
             data: encodeFunctionData({
               abi: BLACKJACK_CONFIG.abi,
               functionName: 'resolveGame'
@@ -250,7 +254,7 @@ export const useBlackjackContract = () => {
         })
       } else {
         writeContract({
-          address: BLACKJACK_CONFIG.address,
+          address: contractAddress,
           abi: BLACKJACK_CONFIG.abi,
           functionName: 'resolveGame'
         })

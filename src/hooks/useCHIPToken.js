@@ -1,16 +1,20 @@
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { CHIP_TOKEN_CONFIG, BLACKJACK_CONFIG } from '../config/contracts'
+import { CHIP_TOKEN_CONFIG, BLACKJACK_CONFIG, CONTRACT_ADDRESSES } from '../config/contracts'
+import { getNetworkKeyByChainId } from '../config/networks'
 
 export const useCHIPBalance = () => {
   const { address, isConnected } = useAccount()
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const contractAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.casinoChip : null
   
   const { data: balance, isLoading, refetch } = useReadContract({
-    address: CHIP_TOKEN_CONFIG.address,
+    address: contractAddress,
     abi: CHIP_TOKEN_CONFIG.abi,
     functionName: 'balanceOf',
     args: [address],
-    enabled: !!address && isConnected
+    enabled: !!address && isConnected && !!contractAddress
   })
 
   return {
@@ -23,13 +27,16 @@ export const useCHIPBalance = () => {
 
 export const useCHIPAllowance = (spenderAddress) => {
   const { address } = useAccount()
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const contractAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.casinoChip : null
   
   const { data: allowance, refetch } = useReadContract({
-    address: CHIP_TOKEN_CONFIG.address,
+    address: contractAddress,
     abi: CHIP_TOKEN_CONFIG.abi,
     functionName: 'allowance',
     args: [address, spenderAddress],
-    enabled: !!address && !!spenderAddress
+    enabled: !!address && !!spenderAddress && !!contractAddress
   })
 
   return {
@@ -41,13 +48,21 @@ export const useCHIPAllowance = (spenderAddress) => {
 export const useCHIPApprove = () => {
   const { writeContract, data: hash, isPending, error } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const contractAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.casinoChip : null
 
   const approve = async (spenderAddress, amount) => {
+    if (!contractAddress) {
+      console.error('No CHIP token address for current network')
+      return
+    }
+    
     try {
       const amountInWei = parseUnits(amount.toString(), 18)
       
       writeContract({
-        address: CHIP_TOKEN_CONFIG.address,
+        address: contractAddress,
         abi: CHIP_TOKEN_CONFIG.abi,
         functionName: 'approve',
         args: [spenderAddress, amountInWei]
@@ -69,7 +84,10 @@ export const useCHIPApprove = () => {
 // Hook to check and approve CHIP tokens before playing
 export const useEnsureCHIPApproval = () => {
   const { address } = useAccount()
-  const { allowance, refetch: refetchAllowance } = useCHIPAllowance(BLACKJACK_CONFIG.address)
+  const chainId = useChainId()
+  const networkKey = getNetworkKeyByChainId(chainId)
+  const blackjackAddress = networkKey ? CONTRACT_ADDRESSES[networkKey]?.blackjack : null
+  const { allowance, refetch: refetchAllowance } = useCHIPAllowance(blackjackAddress)
   const { approve, isPending, isConfirming, isSuccess } = useCHIPApprove()
   const { balance } = useCHIPBalance()
 
@@ -87,7 +105,7 @@ export const useEnsureCHIPApproval = () => {
     const balanceInWei = parseUnits(balance.toString(), 18)
     const approvalAmount = balanceInWei > 0n ? balanceInWei : betInWei
     
-    await approve(BLACKJACK_CONFIG.address, formatUnits(approvalAmount, 18))
+    await approve(blackjackAddress, formatUnits(approvalAmount, 18))
     
     // Wait for approval to complete
     return new Promise((resolve) => {

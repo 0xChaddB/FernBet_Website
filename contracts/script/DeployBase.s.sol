@@ -16,7 +16,7 @@ contract DeployBaseScript is Script {
     
     // You'll need to create a VRF subscription and fund it with LINK
     // Visit: https://vrf.chain.link/base-sepolia
-    uint256 constant SUBSCRIPTION_ID = 1; // Replace with your actual subscription ID
+    uint256 constant SUBSCRIPTION_ID = 33044594880601817352894325160789429723471484151736253683391306672267394653937;
     
     // Base Sepolia ETH/USD price feed
     address constant ETH_USD_PRICE_FEED = 0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1;
