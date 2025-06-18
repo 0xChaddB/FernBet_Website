@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import SmartWalletConnect from '../components/SmartWalletConnect'
 import PaymasterBanner from '../components/PaymasterBanner'
+import NetworkSelector from '../components/NetworkSelector'
 import { useAccount } from 'wagmi'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
 import { useCasinoBank } from '../hooks/useCasinoBank'
@@ -282,7 +283,14 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             <span>FernBet</span>
           </div>
           
-          <SmartWalletConnect variant="navbar" />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem'
+          }}>
+            <NetworkSelector />
+            <SmartWalletConnect variant="navbar" />
+          </div>
         </div>
       </nav>
 
