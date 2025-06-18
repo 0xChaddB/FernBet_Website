@@ -305,7 +305,6 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
           <p style={{
             fontSize: isMobile ? '0.875rem' : '1.2rem',
             color: '#94a3b8',
-            marginBottom: isMobile ? '1.5rem' : '2rem',
             maxWidth: '600px',
             margin: '0 auto',
             marginBottom: isMobile ? '1.5rem' : '2rem'
