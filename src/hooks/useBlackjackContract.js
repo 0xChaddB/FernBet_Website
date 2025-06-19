@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { parseUnits, formatUnits, encodeFunctionData } from 'viem'
+import { baseSepolia } from 'wagmi/chains'
 import { BLACKJACK_CONFIG, GAME_FLAGS, isFlagSet, formatCard, CONTRACT_ADDRESSES } from '../config/contracts'
 import { useEnsureCHIPApproval } from './useCHIPToken'
 import { getNetworkKeyByChainId } from '../config/networks'
@@ -112,6 +113,28 @@ export const useBlackjackContract = () => {
   // === GAME ACTIONS AVEC SMART WALLET OPTIMISÉ ===
   const startGame = async (betAmount) => {
     if (!address || !isConnected) return
+
+    // Check if on correct network
+    if (chainId !== baseSepolia.id) {
+      setGameState(prev => ({ 
+        ...prev, 
+        message: 'Please switch to Base Sepolia network',
+        isLoading: false 
+      }))
+      console.error('Wrong network. Current:', chainId, 'Expected:', baseSepolia.id)
+      return
+    }
+
+    // Check if contract address is available
+    if (!contractAddress) {
+      setGameState(prev => ({ 
+        ...prev, 
+        message: 'Contract not available on this network',
+        isLoading: false 
+      }))
+      console.error('No contract address for current network')
+      return
+    }
 
     try {
       setGameState(prev => ({ ...prev, isLoading: true, message: 'Approving CHIP tokens...' }))

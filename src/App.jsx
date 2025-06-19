@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Web3Provider } from './providers/Web3ProviderSimple'
 import HomePageResponsive from './pages/HomePageResponsive'
 import GamePage from './pages/GamePage'
+import DebugNetwork from './components/DebugNetwork'
 
 const AppContent = () => {
   const [currentPage, setCurrentPage] = useState('home')
@@ -34,6 +35,7 @@ function App() {
   return (
     <Web3Provider>
       <AppContent />
+      <DebugNetwork />
     </Web3Provider>
   )
 }

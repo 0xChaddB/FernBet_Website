@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAccount, useConnect, useDisconnect, useChainId, useSwitchChain } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
+import { switchToBaseSepoliaNetwork } from '../utils/addNetwork';
 
 const SimpleConnectButton = ({ variant = 'default' }) => {
   const { address, isConnected } = useAccount();
@@ -13,7 +14,14 @@ const SimpleConnectButton = ({ variant = 'default' }) => {
   // Auto-switch to Base Sepolia if connected to wrong network
   React.useEffect(() => {
     if (isConnected && chainId !== baseSepolia.id) {
-      switchChain({ chainId: baseSepolia.id });
+      console.log('Wrong network detected. Current:', chainId, 'Expected:', baseSepolia.id);
+      // Try using the direct method first
+      switchToBaseSepoliaNetwork().then(success => {
+        if (!success) {
+          // Fallback to wagmi method
+          switchChain({ chainId: baseSepolia.id }).catch(console.error);
+        }
+      });
     }
   }, [isConnected, chainId, switchChain]);
 
