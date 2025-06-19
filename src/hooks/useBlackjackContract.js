@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
-import { parseUnits, formatUnits, encodeFunctionData } from 'viem'
+import { parseUnits, formatUnits } from 'viem'
 import { baseSepolia } from 'wagmi/chains'
 import { BLACKJACK_CONFIG, GAME_FLAGS, isFlagSet, formatCard, CONTRACT_ADDRESSES } from '../config/contracts'
 import { useEnsureCHIPApproval } from './useCHIPToken'
@@ -60,55 +60,6 @@ export const useBlackjackContract = () => {
     enabled: !!address && isConnected && isInGame && !!contractAddress
   })
 
-  // === SMART WALLET SESSION MANAGEMENT ===
-  const [sessionActive, setSessionActive] = useState(false)
-  const [sessionExpiry, setSessionExpiry] = useState(null)
-
-  const createGameSession = async () => {
-    try {
-      // Coinbase Smart Wallet Session Key création
-      const session = await window.ethereum?.request({
-        method: 'wallet_createSession',
-        params: [{
-          duration: 3600, // 1 heure
-          permissions: [
-            {
-              target: contractAddress,
-              functions: ['hit', 'stand', 'resolveGame'], // Pas startGame (garde le contrôle des mises)
-              maxGasLimit: '200000'
-            }
-          ]
-        }]
-      })
-      
-      if (session) {
-        setSessionActive(true)
-        setSessionExpiry(Date.now() + 3600000) // 1 heure
-        localStorage.setItem('fernbet_session', JSON.stringify({
-          active: true,
-          expiry: Date.now() + 3600000
-        }))
-        return true
-      }
-    } catch (error) {
-      console.error('Session creation failed:', error)
-    }
-    return false
-  }
-
-  const revokeSession = async () => {
-    try {
-      await window.ethereum?.request({
-        method: 'wallet_revokeSession',
-        params: []
-      })
-      setSessionActive(false)
-      setSessionExpiry(null)
-      localStorage.removeItem('fernbet_session')
-    } catch (error) {
-      console.error('Session revocation failed:', error)
-    }
-  }
 
   // === GAME ACTIONS AVEC SMART WALLET OPTIMISÉ ===
   const startGame = async (betAmount) => {
@@ -163,18 +114,6 @@ export const useBlackjackContract = () => {
         args: [betInWei]
       })
 
-      // Proposer la création d'une session après le premier jeu
-      if (!sessionActive) {
-        setTimeout(async () => {
-          const sessionCreated = await createGameSession()
-          if (sessionCreated) {
-            setGameState(prev => ({ 
-              ...prev, 
-              message: 'Session created! Next actions won\'t require signatures.' 
-            }))
-          }
-        }, 2000)
-      }
 
     } catch (error) {
       console.error('Start game failed:', error)
@@ -192,26 +131,11 @@ export const useBlackjackContract = () => {
     try {
       setGameState(prev => ({ ...prev, isLoading: true, message: 'Drawing card...' }))
 
-      if (sessionActive) {
-        // Transaction automatique sans signature
-        await window.ethereum?.request({
-          method: 'wallet_executeSession',
-          params: [{
-            to: contractAddress,
-            data: encodeFunctionData({
-              abi: BLACKJACK_CONFIG.abi,
-              functionName: 'hit'
-            })
-          }]
-        })
-      } else {
-        // Transaction normale avec signature
-        writeContract({
-          address: contractAddress,
-          abi: BLACKJACK_CONFIG.abi,
-          functionName: 'hit'
-        })
-      }
+      writeContract({
+        address: contractAddress,
+        abi: BLACKJACK_CONFIG.abi,
+        functionName: 'hit'
+      })
 
     } catch (error) {
       console.error('Hit failed:', error)
@@ -229,24 +153,11 @@ export const useBlackjackContract = () => {
     try {
       setGameState(prev => ({ ...prev, isLoading: true, message: 'Standing...' }))
 
-      if (sessionActive) {
-        await window.ethereum?.request({
-          method: 'wallet_executeSession',
-          params: [{
-            to: contractAddress,
-            data: encodeFunctionData({
-              abi: BLACKJACK_CONFIG.abi,
-              functionName: 'stand'
-            })
-          }]
-        })
-      } else {
-        writeContract({
-          address: contractAddress,
-          abi: BLACKJACK_CONFIG.abi,
-          functionName: 'stand'
-        })
-      }
+      writeContract({
+        address: contractAddress,
+        abi: BLACKJACK_CONFIG.abi,
+        functionName: 'stand'
+      })
 
     } catch (error) {
       console.error('Stand failed:', error)
@@ -264,24 +175,11 @@ export const useBlackjackContract = () => {
     try {
       setGameState(prev => ({ ...prev, isLoading: true, message: 'Resolving game...' }))
 
-      if (sessionActive) {
-        await window.ethereum?.request({
-          method: 'wallet_executeSession',
-          params: [{
-            to: contractAddress,
-            data: encodeFunctionData({
-              abi: BLACKJACK_CONFIG.abi,
-              functionName: 'resolveGame'
-            })
-          }]
-        })
-      } else {
-        writeContract({
-          address: contractAddress,
-          abi: BLACKJACK_CONFIG.abi,
-          functionName: 'resolveGame'
-        })
-      }
+      writeContract({
+        address: contractAddress,
+        abi: BLACKJACK_CONFIG.abi,
+        functionName: 'resolveGame'
+      })
 
     } catch (error) {
       console.error('Resolve game failed:', error)
@@ -390,12 +288,6 @@ export const useBlackjackContract = () => {
     stand,
     resolveGame,
     refreshGameData,
-    
-    // Gestion des sessions
-    sessionActive,
-    sessionExpiry,
-    createGameSession,
-    revokeSession,
     
     // État des transactions
     isWritePending,

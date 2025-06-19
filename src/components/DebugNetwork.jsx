@@ -3,6 +3,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 import { CONTRACT_ADDRESSES } from '../config/contracts';
 import { getNetworkKeyByChainId } from '../config/networks';
+import { switchToBaseSepoliaNetwork } from '../utils/addNetwork';
 
 const DebugNetwork = () => {
   const { address, isConnected } = useAccount();
@@ -37,6 +38,25 @@ const DebugNetwork = () => {
       }}>
         {chainId === baseSepolia.id ? '✅ Correct Network' : '❌ Wrong Network!'}
       </div>
+      {chainId !== baseSepolia.id && (
+        <button
+          onClick={() => switchToBaseSepoliaNetwork()}
+          style={{
+            marginTop: '10px',
+            width: '100%',
+            padding: '8px',
+            background: '#ef4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px'
+          }}
+        >
+          🔄 Switch to Base Sepolia
+        </button>
+      )}
       {networkKey && (
         <div style={{ marginTop: '10px' }}>
           <strong>Contracts:</strong>

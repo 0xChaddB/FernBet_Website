@@ -128,6 +128,13 @@ export const useCasinoBank = () => {
     const claimFreeChips = async () => {
       if (!address || !isConnected || hasClaimedFreeChips) return
 
+      // Check if contract address is available
+      if (!contractAddress) {
+        console.error('No CasinoBank contract on current network')
+        alert('Please switch to Base Sepolia network')
+        return
+      }
+
       try {
         setIsLoading(true)
         writeContract({
