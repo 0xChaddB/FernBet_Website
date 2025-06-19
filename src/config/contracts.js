@@ -3,7 +3,7 @@ export const CONTRACT_ADDRESSES = {
   // Base Sepolia addresses
   'base-sepolia': {
     casinoChip: '0x52cBc9331983B8BC9b012EEbf50e43aD4c358f46',
-    casinoBank: '0x490B24a5f87EC80Ca009E029b3267c51659Cf11B',
+    casinoBank: '0x43414bFBE80CFfC83329217c55dE433e473a717f', // Using the first CasinoBank that CasinoChip recognizes
     blackjack: '0x4b8fE239BFA3d6cFb3393D72F9a6d16b0B2DCD90',
     dice: '0xD3E221DfbF78fa72d9Afcad8887F6a7806b21aBC',
     roulette: '0x399F2e0b5297f77e86608aEe4c03656EA5425b6a',
