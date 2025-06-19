@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useBlackjackContract } from '../hooks/useBlackjackContract'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
+import ContractLink from './ContractLink'
 
 // Responsive card component
 const Card = ({ value, isHidden = false, isNew = false }) => {
@@ -832,6 +833,16 @@ const BlackjackResponsive = ({ demoMode = false }) => {
             </div>
           </div>
         )}
+        
+        {/* Contract Link */}
+        <div style={{
+          position: 'absolute',
+          bottom: '1rem',
+          right: '1rem',
+          zIndex: 10
+        }}>
+          <ContractLink contractName="blackjack" />
+        </div>
       </div>
     </div>
   )

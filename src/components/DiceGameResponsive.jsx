@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDiceContract } from '../hooks/useDiceContract'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
+import ContractLink from './ContractLink'
 
 const DiceGameResponsive = ({ demoMode = false }) => {
   // Contracts
@@ -584,6 +585,16 @@ const DiceGameResponsive = ({ demoMode = false }) => {
           </div>
         </div>
       )}
+      
+      {/* Contract Link */}
+      <div style={{
+        position: 'absolute',
+        bottom: '1rem',
+        right: '1rem',
+        zIndex: 10
+      }}>
+        <ContractLink contractName="dice" />
+      </div>
     </div>
     </div>
   )
