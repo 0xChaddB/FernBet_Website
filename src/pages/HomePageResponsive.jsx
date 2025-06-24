@@ -328,31 +328,9 @@ const HomePageResponsive = ({ onNavigateToGame }) => {
             margin: '0 auto',
             marginBottom: isMobile ? '1.5rem' : '2rem'
           }}>
-            Play provably fair games powered by Chainlink VRF
+            Play provably fair games on Base
           </p>
           
-          {/* Quick Stats */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: isMobile ? '1.5rem' : '4rem',
-            flexWrap: 'wrap'
-          }}>
-            <div>
-              <div style={{ fontSize: isMobile ? '1.25rem' : '1.8rem', fontWeight: 'bold', color: '#34d399' }}>1,247</div>
-              <div style={{ fontSize: isMobile ? '0.75rem' : '0.9rem', color: '#64748b' }}>Players Online</div>
-            </div>
-            <div>
-              <div style={{ fontSize: isMobile ? '1.25rem' : '1.8rem', fontWeight: 'bold', color: '#60a5fa' }}>99%</div>
-              <div style={{ fontSize: isMobile ? '0.75rem' : '0.9rem', color: '#64748b' }}>RTP</div>
-            </div>
-            <div>
-              <div style={{ fontSize: isMobile ? '1.25rem' : '1.8rem', fontWeight: 'bold', color: '#fbbf24' }}>
-                <span style={{ fontFamily: 'sans-serif' }}>₿</span>15.8
-              </div>
-              <div style={{ fontSize: isMobile ? '0.75rem' : '0.9rem', color: '#64748b' }}>Won Today</div>
-            </div>
-          </div>
         </section>
 
         {/* Welcome Banner for Non-Connected Users */}
