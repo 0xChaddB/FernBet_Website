@@ -13,7 +13,7 @@ const ContractLink = ({ contractName, style = {} }) => {
   const contractAddress = CONTRACT_ADDRESSES[networkKey]?.[contractName];
   if (!contractAddress || contractAddress === '0x0000000000000000000000000000000000000000') return null;
   
-  const explorerUrl = `https://sepolia.basescan.org/address/${contractAddress}`;
+  const explorerUrl = `https://base-sepolia.basescan.org/address/${contractAddress}`;
   
   return (
     <a
