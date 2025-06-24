@@ -277,6 +277,42 @@ export const useBlackjackContract = () => {
 
   }, [isConnected, isInGame, playerCards, dealerCards, gameData, isWritePending, isConfirming, isApproving])
 
+  // Capture du résultat après résolution
+  const [lastGameResult, setLastGameResult] = useState(null)
+  const [wasInGame, setWasInGame] = useState(false)
+  
+  // Détecter quand on passe de "in game" à "not in game" (partie résolue)
+  useEffect(() => {
+    if (wasInGame && !isInGame && playerCards && dealerCards) {
+      // La partie vient de se terminer
+      const playerFinalScore = calculateHandValue(playerCards)
+      const dealerFinalScore = calculateHandValue(dealerCards)
+      const betAmount = gameData?.[0] ? formatUnits(gameData[0], 18) : '0'
+      
+      let result = 'lose'
+      let winnings = 0
+      
+      if (playerFinalScore > 21) {
+        result = 'lose'
+      } else if (dealerFinalScore > 21 || playerFinalScore > dealerFinalScore) {
+        result = 'win'
+        winnings = parseFloat(betAmount) * 2
+      } else if (playerFinalScore === dealerFinalScore) {
+        result = 'push'
+        winnings = parseFloat(betAmount)
+      }
+      
+      setLastGameResult({
+        result,
+        winnings,
+        playerScore: playerFinalScore,
+        dealerScore: dealerFinalScore,
+        bet: betAmount
+      })
+    }
+    setWasInGame(!!isInGame)
+  }, [isInGame, wasInGame, playerCards, dealerCards, gameData])
+  
   // Refresh après confirmation de transaction
   useEffect(() => {
     if (isConfirmed) {
@@ -317,7 +353,11 @@ export const useBlackjackContract = () => {
     
     // État de connexion
     isConnected,
-    address
+    address,
+    
+    // Résultat de la dernière partie
+    lastGameResult,
+    clearLastGameResult: () => setLastGameResult(null)
   }
 }
 

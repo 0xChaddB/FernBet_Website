@@ -81,7 +81,9 @@ const BlackjackResponsive = ({ demoMode = false }) => {
     hit,
     stand,
     resolveGame,
-    isConnected
+    isConnected,
+    lastGameResult,
+    clearLastGameResult
   } = realContract
 
   const chipBalance = realChipBalance
@@ -150,44 +152,27 @@ const BlackjackResponsive = ({ demoMode = false }) => {
   }
 
   const handleResolve = async () => {
-    // Calculer le résultat localement
-    let result = 'lose'
-    let winnings = 0
-    
-    if (playerScore > 21) {
-      result = 'lose'
-    } else if (dealerScore > 21 || playerScore > dealerScore) {
-      result = 'win'
-      winnings = parseFloat(contractGameState.bet) * 2
-    } else if (playerScore === dealerScore) {
-      result = 'push'
-      winnings = parseFloat(contractGameState.bet)
-    }
-    
-    // Afficher le résultat immédiatement
-    setLastResult({
-      result,
-      winnings,
-      playerScore: playerScore,
-      dealerScore: dealerScore
-    })
-    setShowResult(true)
-    
-    // Ensuite, appeler resolveGame pour la blockchain
+    // D'abord, appeler resolveGame pour la blockchain
     await resolveGame()
+    
+    // Le résultat sera affiché après la confirmation de la transaction
   }
 
+  // Afficher le résultat quand on reçoit la confirmation de la blockchain
   useEffect(() => {
-    if (playerScore > 21 && contractGameState.status === 'gameOver') {
+    if (lastGameResult && !showResult) {
+      setLastResult(lastGameResult)
+      setShowResult(true)
+      clearLastGameResult()
+    }
+  }, [lastGameResult])
+
+  // Auto-resolve quand le joueur fait bust
+  useEffect(() => {
+    if (playerScore > 21 && contractGameState.status === 'gameOver' && !contractGameState.isLoading) {
       setTimeout(() => handleResolve(), 1000)
     }
   }, [playerScore, contractGameState.status])
-
-  useEffect(() => {
-    if (contractGameState.status === 'gameOver' && !showResult) {
-      setTimeout(() => handleResolve(), 1500)
-    }
-  }, [contractGameState.status])
 
   // Force connection - no demo mode allowed
   if (!isConnected && !demoMode) {
