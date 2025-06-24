@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useMockBlackjackContract } from '../hooks/useMockBlackjack'
+import ContractLink from './ContractLink'
 
 const RouletteGame = ({ demoMode = true }) => {
   const mockContract = useMockBlackjackContract()
@@ -779,6 +780,16 @@ const RouletteGame = ({ demoMode = true }) => {
             </div>
           </div>
         )}
+        
+        {/* Contract Link */}
+        <div style={{
+          position: 'absolute',
+          bottom: '1rem',
+          right: '1rem',
+          zIndex: 10
+        }}>
+          <ContractLink contractName="roulette" />
+        </div>
       </div>
     </div>
   )
