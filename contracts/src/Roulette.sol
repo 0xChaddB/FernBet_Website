@@ -47,7 +47,7 @@ contract Roulette is VRFConsumerBaseV2Plus, ReentrancyGuard {
     bytes32 public immutable KEY_HASH;
     uint256 public immutable SUBSCRIPTION_ID;
     uint16 public constant REQUEST_CONFIRMATIONS = 3;
-    uint32 public constant CALLBACK_GAS_LIMIT = 200000;
+    uint32 public constant CALLBACK_GAS_LIMIT = 500000;
 
     CasinoChip public immutable chip;
 

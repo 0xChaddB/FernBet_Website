@@ -16,18 +16,14 @@ contract DeployScript is Script {
     
     // You'll need to create a VRF subscription and fund it with LINK
     // Visit: https://vrf.chain.link/
-    uint256 constant SUBSCRIPTION_ID = 103036806356572904141444650306175330773219057672506466552021010715624678697306; // Replace with your actual subscription ID
+    uint256 constant SUBSCRIPTION_ID = 103036806356572904141444650306175330773219057672506466552021010715624678697306;  
     
     // Sepolia ETH/USD price feed
     address constant ETH_USD_PRICE_FEED = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
 
     function run() external {
-        // Option 1: Use --account flag with cast wallet (comment this if using private key)
+        // When using --account flag, Forge handles the private key automatically
         vm.startBroadcast();
-        
-        // Option 2: Use private key from env (uncomment if not using --account)
-        // uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        // vm.startBroadcast(deployerPrivateKey);
 
         console.log("Deploying to Sepolia testnet...");
         console.log("Deployer address:", msg.sender);
@@ -90,13 +86,18 @@ contract DeployScript is Script {
         chip.grantRole(casinoRole, address(slots));
         console.log("CASINO_ROLE granted to all game contracts");
 
-        // 6. Fund the CasinoBank with CHIP tokens only
+        // 6. Fund the final CasinoBank with ETH and mint CHIP tokens
+        // Send 0.1 ETH to the final CasinoBank
+        (bool success, ) = address(finalCasinoBank).call{value: 0.1 ether}("");
+        require(success, "Failed to fund casino bank with ETH");
+        console.log("CasinoBank funded with 0.1 ETH");
+        
         // Grant CASINO_ROLE to the final CasinoBank so it can mint chips
         chip.grantRole(casinoRole, address(finalCasinoBank));
-        console.log("CASINO_ROLE granted to CasinoBank");
         
         // Mint a large amount of CHIP tokens to the CasinoBank
-        // With ratio 1 CHIP = 0.000001 ETH, we mint 1,000,000 CHIP for casino liquidity
+        // With ratio 1 CHIP = 0.000001 ETH, 0.1 ETH = 100,000 CHIP
+        // Let's mint 1,000,000 CHIP tokens for casino liquidity
         uint256 casinoChipReserve = 1_000_000 * 10**18; // 1 million CHIP
         chip.mint(address(finalCasinoBank), casinoChipReserve);
         console.log("CasinoBank funded with 1,000,000 CHIP tokens");

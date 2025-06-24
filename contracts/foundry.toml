@@ -7,6 +7,11 @@ optimizer = true
 optimizer_runs = 200
 ignored_error_codes = [3415]
 
+[remappings] = [@openzeppelin/=lib/openzeppelin-contracts/
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@chainlink/=lib/chainlink/
+forge-std/=lib/forge-std/src/]
+
 [rpc_endpoints]
 sepolia = "${SEPOLIA_RPC_URL}"
 base-sepolia = "${BASE_SEPOLIA_RPC_URL}"
