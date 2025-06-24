@@ -242,7 +242,18 @@ export const useBlackjackContract = () => {
       
       if (dealerDone) {
         status = 'gameOver'
-        message = 'Game finished! Resolve to see results.'
+        // Déterminer le résultat
+        if (playerScore > 21) {
+          message = `Bust! You lose with ${playerScore}. Click resolve to finish.`
+        } else if (dealerScore > 21) {
+          message = `Dealer busts with ${dealerScore}! You win! Click resolve to claim.`
+        } else if (playerScore > dealerScore) {
+          message = `You win! ${playerScore} vs ${dealerScore}. Click resolve to claim.`
+        } else if (playerScore === dealerScore) {
+          message = `Push! Both have ${playerScore}. Click resolve to get refund.`
+        } else {
+          message = `Dealer wins ${dealerScore} vs ${playerScore}. Click resolve to finish.`
+        }
       } else if (playerStood) {
         status = 'playerStood'
         message = 'Dealer playing...'

@@ -150,15 +150,31 @@ const BlackjackResponsive = ({ demoMode = false }) => {
   }
 
   const handleResolve = async () => {
-    const result = await resolveGame()
-    if (result) {
-      setLastResult({
-        ...result,
-        playerScore: playerScore,
-        dealerScore: dealerScore
-      })
-      setShowResult(true)
+    // Calculer le résultat localement
+    let result = 'lose'
+    let winnings = 0
+    
+    if (playerScore > 21) {
+      result = 'lose'
+    } else if (dealerScore > 21 || playerScore > dealerScore) {
+      result = 'win'
+      winnings = parseFloat(contractGameState.bet) * 2
+    } else if (playerScore === dealerScore) {
+      result = 'push'
+      winnings = parseFloat(contractGameState.bet)
     }
+    
+    // Afficher le résultat immédiatement
+    setLastResult({
+      result,
+      winnings,
+      playerScore: playerScore,
+      dealerScore: dealerScore
+    })
+    setShowResult(true)
+    
+    // Ensuite, appeler resolveGame pour la blockchain
+    await resolveGame()
   }
 
   useEffect(() => {
@@ -744,13 +760,18 @@ const BlackjackResponsive = ({ demoMode = false }) => {
             )}
 
             {contractGameState.status === 'gameOver' && !showResult && (
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '1rem', 
-                  color: '#94a3b8' 
-                }}>
-                  Game finished! Calculating results...
-                </div>
+              <div className="action-buttons">
+                <button
+                  onClick={handleResolve}
+                  disabled={contractGameState.isLoading}
+                  className="action-button deal"
+                  style={{
+                    background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                    boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
+                  }}
+                >
+                  {contractGameState.isLoading ? 'Resolving...' : 'Show Results'}
+                </button>
               </div>
             )}
           </div>
