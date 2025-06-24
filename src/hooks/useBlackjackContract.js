@@ -105,6 +105,13 @@ export const useBlackjackContract = () => {
 
       // Convert bet amount to CHIP tokens (18 decimals)
       const betInWei = parseUnits(betAmount.toString(), 18)
+      
+      console.log('Starting game with:', {
+        contractAddress,
+        betAmount,
+        betInWei: betInWei.toString(),
+        betInWeiHex: '0x' + betInWei.toString(16)
+      })
 
       // Start game with CHIP tokens (no ETH value needed)
       writeContract({
