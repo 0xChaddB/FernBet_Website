@@ -1,13 +1,13 @@
 // Contract addresses - DEPLOYED 2025-01-24
 export const CONTRACT_ADDRESSES = {
-  // Base Sepolia addresses
+  // Base Sepolia addresses - Updated with Simple contracts
   'base-sepolia': {
     casinoChip: '0x38969f932c5830787B68676Edd6105534c3e60e0',
     casinoBank: '0x540A3e89E545C799976B0BC2e251f86CF74635c5',
-    blackjack: '0xC3E8f630dE5dC659d309b60D622EF40d02EAf00F',
-    dice: '0xd52431c66609F91bd8469c17dE58802155eD610c',
-    roulette: '0xD5dB54C31d7e1b9E9b73093aeB4735907517D0cc',
-    slots: '0xAa212E289314D7192C225307ed7086B6d22De4Cf',
+    blackjack: '0xC3E8f630dE5dC659d309b60D622EF40d02EAf00F', // Already SimplifiedBlackjack
+    dice: '0xe569a589eB273B2d307aBE6A46E9DC01977B4270', // DiceSimple
+    roulette: '0x54e2a796aE8e431F171353CbF4f421304A0bB898', // RouletteSimple
+    slots: '0xfcfEb9E4fa07395171e281381e49aa75CCcb91e1', // SlotsSimple
   }
 }
 

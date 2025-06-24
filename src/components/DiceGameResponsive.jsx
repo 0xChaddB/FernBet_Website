@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { useDiceContract } from '../hooks/useDiceContract'
+import { useDiceContractSimple } from '../hooks/useDiceContractSimple'
 import { useCHIPBalance } from '../hooks/useCHIPToken'
 import ContractLink from './ContractLink'
 
 const DiceGameResponsive = ({ demoMode = false }) => {
   // Contracts
-  const realContract = useDiceContract()
+  const realContract = useDiceContractSimple()
   const { balance: realChipBalance } = useCHIPBalance()
 
   const {
-    gameState,
+    hasActiveBet,
+    activeBet,
     placeBet,
     claimWinnings,
-    isConnected
+    isConnected,
+    isWritePending,
+    isConfirming,
+    lastGameResult,
+    clearLastGameResult
   } = realContract
 
   const chipBalance = realChipBalance
@@ -48,13 +53,25 @@ const DiceGameResponsive = ({ demoMode = false }) => {
     }
   }
 
-  const handleNextRoll = () => {
+  const handleClaimWinnings = async () => {
     setShowResult(false)
     setLastRoll(null)
-    if (gameState.hasActiveBet && gameState.isResolved) {
-      claimWinnings()
-    }
+    await claimWinnings()
   }
+
+  // Handle results from blockchain
+  useEffect(() => {
+    if (lastGameResult && !showResult) {
+      setLastRoll({
+        roll: lastGameResult.rolledNumber,
+        target: lastGameResult.targetNumber,
+        won: lastGameResult.won,
+        payout: lastGameResult.payout.toFixed(2)
+      })
+      setShowResult(true)
+      clearLastGameResult()
+    }
+  }, [lastGameResult, showResult, clearLastGameResult])
 
   // Force connection - no demo mode allowed
   if (!isConnected) {
@@ -435,16 +452,45 @@ const DiceGameResponsive = ({ demoMode = false }) => {
             </div>
           </div>
 
-          {/* Roll Button */}
-          {
-            <button
-              onClick={handleRoll}
-              disabled={isRolling || betAmount > parseFloat(chipBalance) || betAmount <= 0}
+          {/* Roll/Claim Button */}
+          {hasActiveBet && activeBet?.isResolved ? (
+            <button 
+              onClick={handleClaimWinnings}
+              disabled={isWritePending || isConfirming}
               className="roll-button"
               style={{
                 width: '100%',
                 padding: '1rem',
-                background: (isRolling || betAmount > parseFloat(chipBalance) || betAmount <= 0)
+                background: activeBet?.payout > 0 
+                  ? 'linear-gradient(135deg, #10b981, #059669)'
+                  : 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.75rem',
+                fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: activeBet?.payout > 0 
+                  ? '0 4px 15px rgba(16, 185, 129, 0.3)'
+                  : '0 4px 15px rgba(139, 92, 246, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              {isWritePending || isConfirming ? 'Processing...' : 'Show Results'}
+            </button>
+          ) : (
+            <button
+              onClick={handleRoll}
+              disabled={isRolling || betAmount > parseFloat(chipBalance) || betAmount <= 0 || hasActiveBet || isWritePending || isConfirming}
+              className="roll-button"
+              style={{
+                width: '100%',
+                padding: '1rem',
+                background: (isRolling || betAmount > parseFloat(chipBalance) || betAmount <= 0 || hasActiveBet || isWritePending || isConfirming)
                   ? '#6b7280'
                   : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
                 color: 'white',
@@ -452,7 +498,7 @@ const DiceGameResponsive = ({ demoMode = false }) => {
                 borderRadius: '0.75rem',
                 fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
                 fontWeight: 'bold',
-                cursor: (isRolling || betAmount > parseFloat(chipBalance) || betAmount <= 0) 
+                cursor: (isRolling || betAmount > parseFloat(chipBalance) || betAmount <= 0 || hasActiveBet || isWritePending || isConfirming) 
                   ? 'not-allowed' : 'pointer',
                 transition: 'all 0.3s ease',
                 boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
@@ -462,7 +508,7 @@ const DiceGameResponsive = ({ demoMode = false }) => {
                 gap: '0.5rem'
               }}
             >
-              {isRolling ? (
+              {isRolling || isWritePending || isConfirming ? (
                 <>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
                     <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="2"/>
@@ -484,7 +530,7 @@ const DiceGameResponsive = ({ demoMode = false }) => {
                 </>
               )}
             </button>
-          }
+          )}
         </div>
       </div>
       
@@ -566,7 +612,7 @@ const DiceGameResponsive = ({ demoMode = false }) => {
             )}
             
             <button
-              onClick={handleNextRoll}
+              onClick={() => setShowResult(false)}
               style={{
                 width: '100%',
                 padding: '0.875rem',
