@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { baseSepolia } from 'wagmi/chains'
-import { BLACKJACK_CONFIG, GAME_FLAGS, isFlagSet, formatCard, CONTRACT_ADDRESSES } from '../config/contracts'
+import { BLACKJACK_CONFIG, formatCard, CONTRACT_ADDRESSES } from '../config/contracts'
 import { useEnsureCHIPApproval } from './useCHIPToken'
 import { getNetworkKeyByChainId } from '../config/networks'
 
@@ -229,12 +229,14 @@ export const useBlackjackContract = () => {
     let message = 'Start a new game'
 
     if (isInGame) {
-      const flags = gameData?.[1] || 0
+      const isActive = gameData?.[1] || false
+      const playerStood = gameData?.[2] || false
+      const dealerDone = gameData?.[3] || false
       
-      if (isFlagSet(flags, GAME_FLAGS.DEALER_DONE)) {
+      if (dealerDone) {
         status = 'gameOver'
         message = 'Game finished! Resolve to see results.'
-      } else if (isFlagSet(flags, GAME_FLAGS.PLAYER_STOOD)) {
+      } else if (playerStood) {
         status = 'playerStood'
         message = 'Dealer playing...'
       } else {
