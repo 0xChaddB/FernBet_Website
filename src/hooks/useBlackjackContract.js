@@ -279,39 +279,47 @@ export const useBlackjackContract = () => {
 
   // Capture du résultat après résolution
   const [lastGameResult, setLastGameResult] = useState(null)
-  const [wasInGame, setWasInGame] = useState(false)
+  const [pendingResult, setPendingResult] = useState(null)
   
-  // Détecter quand on passe de "in game" à "not in game" (partie résolue)
+  // Capturer le résultat AVANT la résolution quand dealerDone = true
   useEffect(() => {
-    if (wasInGame && !isInGame && playerCards && dealerCards) {
-      // La partie vient de se terminer
-      const playerFinalScore = calculateHandValue(playerCards)
-      const dealerFinalScore = calculateHandValue(dealerCards)
-      const betAmount = gameData?.[0] ? formatUnits(gameData[0], 18) : '0'
-      
-      let result = 'lose'
-      let winnings = 0
-      
-      if (playerFinalScore > 21) {
-        result = 'lose'
-      } else if (dealerFinalScore > 21 || playerFinalScore > dealerFinalScore) {
-        result = 'win'
-        winnings = parseFloat(betAmount) * 2
-      } else if (playerFinalScore === dealerFinalScore) {
-        result = 'push'
-        winnings = parseFloat(betAmount)
+    if (isInGame && gameData) {
+      const dealerDone = gameData[3] // dealerDone boolean
+      if (dealerDone && !pendingResult) {
+        // Capturer le résultat maintenant avant que les cartes soient effacées
+        const playerFinalScore = calculateHandValue(playerCards || [])
+        const dealerFinalScore = calculateHandValue(dealerCards || [])
+        const betAmount = gameData[0] ? formatUnits(gameData[0], 18) : '0'
+        
+        let result = 'lose'
+        let winnings = 0
+        
+        if (playerFinalScore > 21) {
+          result = 'lose'
+        } else if (dealerFinalScore > 21 || playerFinalScore > dealerFinalScore) {
+          result = 'win'
+          winnings = parseFloat(betAmount) * 2
+        } else if (playerFinalScore === dealerFinalScore) {
+          result = 'push'
+          winnings = parseFloat(betAmount)
+        }
+        
+        setPendingResult({
+          result,
+          winnings,
+          playerScore: playerFinalScore,
+          dealerScore: dealerFinalScore,
+          bet: betAmount
+        })
       }
-      
-      setLastGameResult({
-        result,
-        winnings,
-        playerScore: playerFinalScore,
-        dealerScore: dealerFinalScore,
-        bet: betAmount
-      })
     }
-    setWasInGame(!!isInGame)
-  }, [isInGame, wasInGame, playerCards, dealerCards, gameData])
+    
+    // Quand la partie est terminée (plus in game), transférer le résultat
+    if (!isInGame && pendingResult) {
+      setLastGameResult(pendingResult)
+      setPendingResult(null)
+    }
+  }, [isInGame, gameData, playerCards, dealerCards, pendingResult])
   
   // Refresh après confirmation de transaction
   useEffect(() => {
