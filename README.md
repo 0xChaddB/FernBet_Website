@@ -1,12 +1,14 @@
-# React + Vite
+# FernBet Casino 🚧
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+FernBet Casino is a decentralized casino gaming platform built on the Base blockchain. It allows players to enjoy classic casino games using cryptocurrency, with transparency and fairness guaranteed by smart contracts.
 
-Currently, two official plugins are available:
+## 🎮 Available Games
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Blackjack** - Classic card game where you play against the dealer to reach 21
+- **Dice** - Bet on the outcome of a dice roll (over/under)
+- **Roulette** - European roulette with red/black/number betting
+- **Slots** - 3x3 slot machine with 5 paylines
 
-## Expanding the ESLint configuration
+## 🪙 CHIP Token System
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The casino uses its own ERC20 token called **CHIP** as the in-game currency
